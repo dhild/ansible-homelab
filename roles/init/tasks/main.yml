@@ -6,17 +6,16 @@
     update_cache: yes
     autoremove: yes
     autoclean: yes
+  when: ansible_facts['os_family'] == 'Debian'
   tags:
     - update
 
 - name: Upgrade if needed
   apt:
     upgrade: full
+  when: ansible_facts['os_family'] == 'Debian'
   tags:
     - update
-
-- include_tasks: raspberrypi.yml
-  when: ansible_facts['lsb']['id'] == 'Raspbian'
 
 - name: Ensure timezone set
   timezone:
@@ -40,10 +39,20 @@
   tags:
     - hostname
 
+- include_tasks: admin_user.yml
+
+- include_tasks: firewall_debian.yml
+  when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - firewall
+
+- include_tasks: raspberrypi.yml
+  when: ansible_facts['lsb']['id'] == 'Raspbian'
+
 - name: Reboot if needed
   reboot:
     reboot_timeout: 3600
-  when: timezone or hostname is changed
+  when: timezone.changed or hostname.changed
   tags:
     - reboot
 

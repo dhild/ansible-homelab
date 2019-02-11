@@ -10,3 +10,19 @@
     state: present
     password: "{{ admin_password | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
 
+- name: Disable WIFI and Bluetooth
+  copy:
+    dest: /etc/modprobe.d/raspi-blacklist.conf
+    mode: 0600
+    owner: root
+    group: root
+    content: |
+      # Disable WIFI
+      
+      blacklist brcmfmac
+      blacklist brcmutil
+      
+      # Disable BlueTooth
+      blacklist btbcm
+      blacklist hci_uart
+

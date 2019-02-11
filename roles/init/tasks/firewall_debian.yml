@@ -1,0 +1,31 @@
+---
+
+- name: Install firewall
+  apt:
+    name: ufw
+    state: latest
+  tags:
+    - firewall
+
+- name: Default to deny incoming traffic
+  ufw:
+    policy: deny
+    direction: incoming
+  tags:
+    - firewall
+
+- name: Allow ssh traffic
+  ufw:
+    rule: limit
+    proto: tcp
+    from_ip: 192.168.2.0/24
+    to_port: ssh
+  tags:
+    - firewall
+
+- name: Ensure ufw is enabled
+  ufw:
+    state: enabled
+    logging: on
+  tags:
+    - firewall

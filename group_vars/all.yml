@@ -1,0 +1,6 @@
+admin_username: rhild
+admin_ssh_public_key: https://github.com/dhild.keys
+dns_servers:
+  - 1.1.1.1
+  - 1.0.0.1
+

@@ -1,14 +1,18 @@
 all:
   hosts:
+    crater2:
+      ansible_host: 192.168.2.42
     crater3:
       ansible_host: 192.168.2.43
-  vars:
-    admin_username: rhild
-    admin_ssh_public_key: https://github.com/dhild.keys
   children:
     raspberrypis:
       hosts:
+        crater2:
         crater3:
       vars:
         ansible_user: rhild
+    piholes:
+      hosts:
+        crater2:
+        crater3:
 

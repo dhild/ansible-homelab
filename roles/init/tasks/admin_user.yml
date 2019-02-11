@@ -1,13 +1,11 @@
 ---
-- name: Ensure sudo group exists
+- name: Ensure admin groups exist
   group:
-    name: sudo
+    name: "{{ item }}"
     state: present
-
-- name: Ensure wheel group exists
-  group:
-    name: wheel
-    state: present
+  with_items:
+    - sudo
+    - wheel
 
 - name: Configure sudoers file
   template:
