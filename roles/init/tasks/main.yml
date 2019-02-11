@@ -1,0 +1,49 @@
+---
+- name: Ensure packages are up to date
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    autoremove: yes
+    autoclean: yes
+  tags:
+    - update
+
+- name: Upgrade if needed
+  apt:
+    upgrade: full
+  tags:
+    - update
+
+- include_tasks: raspberrypi.yml
+  when: ansible_facts['lsb']['id'] == 'Raspbian'
+
+- name: Ensure timezone set
+  timezone:
+    name: America/Los_Angeles
+  register: timezone
+  tags:
+    - timezone
+
+- name: Ensure hostname set
+  hostname:
+    name: "{{ inventory_hostname }}"
+  register: hostname
+  tags:
+    - hostname
+
+- name: Ensure hostname is set in /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ ansible_default_ipv4.address }}.+$"
+    line: "{{ ansible_default_ipv4.address }} {{ ansible_fqdn }} {{ ansible_hostname }}"
+  tags:
+    - hostname
+
+- name: Reboot if needed
+  reboot:
+    reboot_timeout: 3600
+  when: timezone or hostname is changed
+  tags:
+    - reboot
+

@@ -1,0 +1,8 @@
+---
+- hosts: all
+  roles:
+    - init
+    - ssh_server
+    - admin_user
+  become: yes
+

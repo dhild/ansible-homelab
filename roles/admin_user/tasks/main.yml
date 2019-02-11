@@ -1,0 +1,45 @@
+---
+- name: Ensure sudo group exists
+  group:
+    name: sudo
+    state: present
+
+- name: Ensure wheel group exists
+  group:
+    name: wheel
+    state: present
+
+- name: Configure sudoers file
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/sudoers
+    validate: 'visudo -cf %s'
+    mode: 0440
+    owner: root
+    group: root
+
+- name: Ensure parent sudoers reads directory
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: '#includedir /etc/sudoers.d'
+    validate: 'visudo -cf %s'
+    mode: 0440
+    owner: root
+    group: root
+
+- name: Configure admin user
+  user:
+    name: "{{ admin_username }}"
+    state: present
+    password: "{{ admin_password | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+    groups:
+      - sudo
+      - wheel
+
+- name: Configure authorized ssh keys from Github URL
+  authorized_key:
+    user: "{{ admin_username }}"
+    state: present
+    key: "{{ admin_ssh_public_key }}"
+

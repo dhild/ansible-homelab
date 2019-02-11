@@ -1,0 +1,12 @@
+---
+- name: Remove passwordless sudo for pi user
+  file:
+    path: /etc/sudoers.d/010_pi-nopasswd
+    state: absent
+
+- name: Change password for pi user
+  user:
+    name: pi
+    state: present
+    password: "{{ admin_password | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+

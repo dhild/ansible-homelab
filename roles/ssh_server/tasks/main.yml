@@ -1,0 +1,32 @@
+---
+- name: Ensure ssh service is installed
+  apt:
+    name: openssh-server
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  register: ssh_installed
+
+- name: Ensure ssh server is enabled
+  systemd:
+    name: ssh
+    daemon_reload: "{{ ssh_installed.changed }}"
+    enabled: yes
+  when: ansible_facts['service_mgr'] == 'systemd'
+
+- name: Ensure ssh configuration is updated
+  copy:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  register: ssh_config_file
+
+- name: Ensure new ssh config is used
+  systemd:
+    name: ssh
+    state: restarted
+  when:
+    - ssh_config_file.changed
+    - ansible_facts['os_family'] == 'Debian'
+
