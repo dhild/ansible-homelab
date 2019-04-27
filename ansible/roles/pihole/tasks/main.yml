@@ -75,6 +75,16 @@
     - pihole
     - firewall
 
+- name: Allow HTTP for admin portal through the firewall
+  ufw:
+    rule: allow
+    proto: tcp
+    to_port: 80
+    from_ip: "{{ ansible_default_ipv4.network }}/24"
+  tags:
+    - pihole
+    - firewall
+
 - name: Reboot Pi-Hole if needed
   reboot:
     reboot_timeout: 3600

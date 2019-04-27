@@ -11,8 +11,14 @@ all:
         crater3:
       vars:
         ansible_user: rhild
+        admin_password: "{{ vault_admin_password }}"
     piholes:
       hosts:
         crater2:
         crater3:
-
+  vars:
+    admin_username: rhild
+    admin_ssh_public_key: https://github.com/dhild.keys
+    dns_servers:
+    - 1.1.1.1
+    - 1.0.0.1
