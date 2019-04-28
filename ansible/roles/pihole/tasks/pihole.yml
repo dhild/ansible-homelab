@@ -1,0 +1,82 @@
+---
+- name: Ensure pihole user exists
+  user:
+    name: pihole
+    state: present
+    system: yes
+
+- name: Ensure pihole config directory exists
+  file:
+    path: /etc/pihole
+    state: directory
+    mode: 0755
+    owner: pihole
+    group: pihole
+
+- name: Ensure pihole install directory exists
+  file:
+    path: /opt/pihole
+    state: directory
+    mode: 0755
+    owner: pihole
+    group: pihole
+
+- name: Create pihole config
+  template:
+    src: setupVars.conf.j2
+    dest: /etc/pihole/setupVars.conf
+    mode: 0644
+    owner: pihole
+    group: pihole
+
+- name: Check if Pi-Hole is installed
+  stat:
+    path: /opt/pihole/version.sh
+  register: pihole_stat
+
+- name: Download Pi-Hole installer
+  when: not pihole_stat.stat.exists
+  get_url:
+    url: https://install.pi-hole.net
+    dest: /opt/pihole/install-pihole.sh
+    mode: 0740
+    owner: pihole
+    group: pihole
+
+- name: Run Pi-Hole installer
+  when: not pihole_stat.stat.exists
+  shell: /opt/pihole/install-pihole.sh --unattended
+  register: install_pihole
+
+- name: Update Pi-Hole
+  when: pihole_stat.stat.exists
+  shell: pihole -up
+
+- name: Change Pi-Hole password
+  shell: pihole -a -p "{{ pihole_admin_password }}"
+
+- name: Allow DNS through the firewall
+  ufw:
+    rule: allow
+    proto: "{{ item }}"
+    to_port: 53
+    from_ip: "{{ ansible_default_ipv4.network }}/24"
+  with_items:
+    - tcp
+    - udp
+  tags:
+    - firewall
+
+- name: Allow HTTP for admin portal through the firewall
+  ufw:
+    rule: allow
+    proto: tcp
+    to_port: 80
+    from_ip: "{{ ansible_default_ipv4.network }}/24"
+  tags:
+    - firewall
+
+- name: Reboot Pi-Hole if needed
+  reboot:
+    reboot_timeout: 3600
+  when: not pihole_stat.stat.exists

@@ -1,5 +1,9 @@
 all:
   hosts:
+    crater0:
+      ansible_host: 192.168.2.40
+    crater1:
+      ansible_host: 192.168.2.41
     crater2:
       ansible_host: 192.168.2.42
     crater3:
@@ -7,6 +11,8 @@ all:
   children:
     raspberrypis:
       hosts:
+        crater0:
+        crater1:
         crater2:
         crater3:
       vars:

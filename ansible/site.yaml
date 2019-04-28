@@ -1,12 +1,6 @@
 ---
-- hosts: all
-  roles:
-    - init
-    - ssh_server
-  become: yes
-
 - hosts: piholes
   roles:
-    - pihole
+  - ssh_server
+  - pihole
   become: yes
-

@@ -18,11 +18,10 @@
     group: root
     content: |
       # Disable WIFI
-      
+
       blacklist brcmfmac
       blacklist brcmutil
-      
+
       # Disable BlueTooth
       blacklist btbcm
       blacklist hci_uart
-

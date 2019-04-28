@@ -40,4 +40,3 @@
     user: "{{ admin_username }}"
     state: present
     key: "{{ admin_ssh_public_key }}"
-
