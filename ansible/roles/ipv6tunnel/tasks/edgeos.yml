@@ -1,0 +1,90 @@
+---
+- name: Configure IPv6 Firewall
+  edgeos_config:
+    lines:
+    - set firewall all-ping enable
+    - set firewall broadcast-ping disable
+    - set firewall ipv6-receive-redirects disable
+    - set firewall ipv6-src-route disable
+    - set firewall log-martians enable
+    - set firewall ipv6-name LOCAL_IPv6_WAN default-action drop
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 1 action accept
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 1 description 'Allow ICMPv6'
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 1 log disable
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 1 protocol icmpv6
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 2 action accept
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 2 description 'Allow Established and Related'
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 2 state established enable
+    - set firewall ipv6-name LOCAL_IPv6_WAN rule 2 state related enable
+    - set firewall ipv6-name WAN_IPv6_IN default-action drop
+    - set firewall ipv6-name WAN_IPv6_IN description 'IPv6 WAN to internal'
+    - set firewall ipv6-name WAN_IPv6_IN rule 1 action accept
+    - set firewall ipv6-name WAN_IPv6_IN rule 1 description 'Allow ICMPv6'
+    - set firewall ipv6-name WAN_IPv6_IN rule 1 log disable
+    - set firewall ipv6-name WAN_IPv6_IN rule 1 protocol icmpv6
+    - set firewall ipv6-name WAN_IPv6_IN rule 2 action accept
+    - set firewall ipv6-name WAN_IPv6_IN rule 2 description 'Allow Established and Related'
+    - set firewall ipv6-name WAN_IPv6_IN rule 2 state established enable
+    - set firewall ipv6-name WAN_IPv6_IN rule 2 state related enable
+    - set firewall ipv6-name WAN_IPv6_IN rule 3 action drop
+    - set firewall ipv6-name WAN_IPv6_IN rule 3 description 'Drop invalid state'
+    - set firewall ipv6-name WAN_IPv6_IN rule 3 log disable
+    - set firewall ipv6-name WAN_IPv6_IN rule 3 state invalid enable
+    - set firewall ipv6-name WAN_IPv6_IN rule 4 action accept
+    - set firewall ipv6-name WAN_IPv6_IN rule 4 description 'ICMPv6'
+    - set firewall ipv6-name WAN_IPv6_IN rule 4 protocol ipv6-icmp
+    - set firewall ipv6-name WAN_IPv6_LOCAL default-action drop
+    - set firewall ipv6-name WAN_IPv6_LOCAL description 'IPv6 WAN to router'
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 1 action accept
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 1 description 'Allow ICMPv6'
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 1 log disable
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 1 protocol icmpv6
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 2 action accept
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 2 description 'Allow Established and Related'
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 2 state established enable
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 2 state related enable
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 3 action drop
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 3 description 'Drop invalid state'
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 3 log disable
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 3 state invalid enable
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 4 action accept
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 4 description 'ICMPv6'
+    - set firewall ipv6-name WAN_IPv6_LOCAL rule 4 protocol ipv6-icmp
+  tags:
+    - firewall
+
+- name: Configure IPv6 Tunnel Devices
+  edgeos_config:
+    lines:
+    - set interfaces ethernet eth0 firewall in ipv6-name WAN_IPv6_IN
+    - set interfaces ethernet eth0 firewall local ipv6-name WAN_IPv6_LOCAL
+    - set interfaces ethernet eth0 firewall out ipv6-name LOCAL_IPv6_WAN
+    - set interfaces switch switch0 address '{{ ipv6_tunnel_routed_64 }}'
+    - set interfaces switch switch0 ipv6 dup-addr-detect-transmits 1
+    - set interfaces switch switch0 ipv6 router-advert cur-hop-limit 64
+    - set interfaces switch switch0 ipv6 router-advert link-mtu 0
+    - set interfaces switch switch0 ipv6 router-advert managed-flag false
+    - set interfaces switch switch0 ipv6 router-advert max-interval 600
+    - set interfaces switch switch0 ipv6 router-advert other-config-flag true
+    - set interfaces switch switch0 ipv6 router-advert prefix '{{ ipv6_tunnel_routed_64 }}' autonomous-flag true
+    - set interfaces switch switch0 ipv6 router-advert prefix '{{ ipv6_tunnel_routed_64 }}' on-link-flag true
+    - set interfaces switch switch0 ipv6 router-advert prefix '{{ ipv6_tunnel_routed_64 }}' valid-lifetime 2592000
+    - set interfaces switch switch0 ipv6 router-advert reachable-time 0
+    - set interfaces switch switch0 ipv6 router-advert retrans-timer 0
+    - set interfaces switch switch0 ipv6 router-advert send-advert true
+    - set interfaces tunnel tun0 encapsulation sit
+    - set interfaces tunnel tun0 local-ip 0.0.0.0
+    - set interfaces tunnel tun0 remote-ip {{ ipv6_tunnel_server_ipv4_address }}
+    - set interfaces tunnel tun0 address '{{ ipv6_tunnel_client_ipv6_address }}'
+    - set interfaces tunnel tun0 description 'HE.NET IPv6 Tunnel'
+    - set interfaces tunnel tun0 multicast disable
+    - set interfaces tunnel tun0 ttl 255
+    - set protocols static interface-route6 '::/0' next-hop-interface tun0
+
+- name: Configure IPv6 Endpoint Updates
+  edgeos_config:
+    lines:
+    - set service dns dynamic interface eth0 service dyndns host-name {{ ipv6_tunnel_hostname }}
+    - set service dns dynamic interface eth0 service dyndns login {{ ipv6_tunnel_login }}
+    - set service dns dynamic interface eth0 service dyndns password {{ ipv6_tunnel_password }}
+    - set service dns dynamic interface eth0 service dyndns server {{ ipv6_tunnel_server }}

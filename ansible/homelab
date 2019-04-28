@@ -1,5 +1,10 @@
 all:
   hosts:
+    edgerouter:
+      ansible_host: 192.168.2.1
+      ansible_user: rhild
+      ansible_network_os: edgeos
+      ansible_connection: network_cli
     crater0:
       ansible_host: 192.168.2.40
     crater1:
@@ -17,7 +22,6 @@ all:
         crater3:
       vars:
         ansible_user: rhild
-        admin_password: "{{ vault_admin_password }}"
     piholes:
       hosts:
         crater2:
