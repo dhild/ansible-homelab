@@ -9,8 +9,10 @@ all:
       ansible_host: 192.168.2.40
     crater1:
       ansible_host: 192.168.2.41
+      pihole_ipv6_address: '2001:470:b:9b:53::1'
     crater2:
       ansible_host: 192.168.2.42
+      pihole_ipv6_address: '2001:470:b:9b:53::2'
     crater3:
       ansible_host: 192.168.2.43
   children:
@@ -24,11 +26,13 @@ all:
         ansible_user: rhild
     piholes:
       hosts:
+        crater1:
         crater2:
-        crater3:
   vars:
     admin_username: rhild
     admin_ssh_public_key: https://github.com/dhild.keys
-    dns_servers:
-    - 1.1.1.1
-    - 1.0.0.1
+    router_ipv4_network: 192.168.2.0/24
+    router_ipv4_address: 192.168.2.1
+    router_domain: hild.local
+    router_reverse_lookup: 2.168.192.in-addr.arpa
+    ipv6_tunnel_routed_64: '2001:470:b:9b::/64'

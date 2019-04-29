@@ -10,13 +10,12 @@
 
 - hosts: edgerouter
   roles:
-  - ipv6tunnel
+  - role: ipv6tunnel
+  - role: dhcp
   vars:
     ipv6_tunnel_server_ipv4_address: "{{ vault_ipv6_tunnel_server_ipv4_address }}"
     ipv6_tunnel_server_ipv6_address: "{{ vault_ipv6_tunnel_server_ipv6_address }}"
     ipv6_tunnel_client_ipv6_address: "{{ vault_ipv6_tunnel_client_ipv6_address }}"
-    ipv6_tunnel_routed_64: "{{ vault_ipv6_tunnel_routed_64 }}"
     ipv6_tunnel_hostname: "{{ vault_ipv6_tunnel_hostname }}"
     ipv6_tunnel_login: "{{ vault_ipv6_tunnel_login }}"
     ipv6_tunnel_password: "{{ vault_ipv6_tunnel_password }}"
-    ipv6_tunnel_server: "{{ vault_ipv6_tunnel_server }}"

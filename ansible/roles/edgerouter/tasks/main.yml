@@ -1,5 +1,0 @@
----
-- name: "Create persistent local config directory"
-  file:
-    path: /config/local
-    state: directory
