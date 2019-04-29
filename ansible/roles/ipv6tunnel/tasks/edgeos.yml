@@ -30,9 +30,6 @@
     - set firewall ipv6-name WAN_IPv6_IN rule 3 description 'Drop invalid state'
     - set firewall ipv6-name WAN_IPv6_IN rule 3 log disable
     - set firewall ipv6-name WAN_IPv6_IN rule 3 state invalid enable
-    - set firewall ipv6-name WAN_IPv6_IN rule 4 action accept
-    - set firewall ipv6-name WAN_IPv6_IN rule 4 description 'ICMPv6'
-    - set firewall ipv6-name WAN_IPv6_IN rule 4 protocol ipv6-icmp
     - set firewall ipv6-name WAN_IPv6_LOCAL default-action drop
     - set firewall ipv6-name WAN_IPv6_LOCAL description 'IPv6 WAN to router'
     - set firewall ipv6-name WAN_IPv6_LOCAL rule 1 action accept
@@ -47,18 +44,15 @@
     - set firewall ipv6-name WAN_IPv6_LOCAL rule 3 description 'Drop invalid state'
     - set firewall ipv6-name WAN_IPv6_LOCAL rule 3 log disable
     - set firewall ipv6-name WAN_IPv6_LOCAL rule 3 state invalid enable
-    - set firewall ipv6-name WAN_IPv6_LOCAL rule 4 action accept
-    - set firewall ipv6-name WAN_IPv6_LOCAL rule 4 description 'ICMPv6'
-    - set firewall ipv6-name WAN_IPv6_LOCAL rule 4 protocol ipv6-icmp
   tags:
     - firewall
 
 - name: Configure IPv6 Tunnel Devices
   edgeos_config:
     lines:
-    - set interfaces ethernet eth0 firewall in ipv6-name WAN_IPv6_IN
-    - set interfaces ethernet eth0 firewall local ipv6-name WAN_IPv6_LOCAL
-    - set interfaces ethernet eth0 firewall out ipv6-name LOCAL_IPv6_WAN
+    - set interfaces switch switch0 firewall in ipv6-name WAN_IPv6_IN
+    - set interfaces switch switch0 firewall local ipv6-name WAN_IPv6_LOCAL
+    - set interfaces switch switch0 firewall out ipv6-name LOCAL_IPv6_WAN
     - set interfaces switch switch0 address '{{ ipv6_tunnel_routed_64 }}'
     - set interfaces switch switch0 ipv6 dup-addr-detect-transmits 1
     - set interfaces switch switch0 ipv6 router-advert cur-hop-limit 64
