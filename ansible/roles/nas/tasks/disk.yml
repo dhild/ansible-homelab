@@ -1,0 +1,40 @@
+---
+- name: get partition information
+  parted:
+    device: "{{ nas_device_path }}"
+    unit: GiB
+  register: nas_device_info
+
+- name: remove unwanted partitions
+  parted:
+    device: "{{ nas_device_path }}"
+    number: "{{ item.num }}"
+    state: absent
+  loop: "{{ nas_device_info.partitions }}"
+  when: nas_device_info.partitions|length > 1
+
+- name: partition NAS device
+  parted:
+    device: "{{ nas_device_path }}"
+    label: gpt
+    name: nas_data
+    number: 1
+    part_start: "0%"
+    part_end: "100%"
+    state: present
+  register: partitioned
+
+- name: format NAS partition
+  filesystem:
+    dev: "{{ nas_device_path }}1"
+    fstype: ext4
+    opts: -L nasdevice
+    force: "{{ partitioned.changed }}"
+
+- name: set up mount
+  mount:
+    path: /mnt/nas
+    fstype: ext4
+    opts: defaults
+    src: LABEL=nasdevice
+    state: mounted

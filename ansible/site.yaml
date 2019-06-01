@@ -1,15 +1,6 @@
 ---
-- name: Configure pihole DNS servers
-  hosts: piholes
-  become: yes
-  roles:
-  - ssh_server
-  - pihole
-  vars:
-    admin_password: "{{ vault_admin_password }}"
-    pihole_admin_password: "{{ vault_pihole_admin_password }}"
-
-- hosts: edgerouter
+- name: Configure router
+  hosts: edgerouter
   roles:
   - role: ipv6tunnel
   vars:
@@ -19,3 +10,25 @@
     ipv6_tunnel_hostname: "{{ vault_ipv6_tunnel_hostname }}"
     ipv6_tunnel_login: "{{ vault_ipv6_tunnel_login }}"
     ipv6_tunnel_password: "{{ vault_ipv6_tunnel_password }}"
+  tags:
+  - router
+
+- name: Configure pihole DNS servers
+  hosts: piholes
+  become: yes
+  roles:
+  - ssh_server
+  - pihole
+  vars:
+    admin_password: "{{ vault_admin_password }}"
+    pihole_admin_password: "{{ vault_pihole_admin_password }}"
+  tags:
+  - pihole
+
+- name: Configure Network Attached Storage servers
+  hosts: nas
+  become: yes
+  roles:
+  - nas
+  tags:
+  - nas

@@ -28,6 +28,11 @@ all:
           pihole_ipv6_address: '2001:470:b:9b:53::1'
         crater2:
           pihole_ipv6_address: '2001:470:b:9b:53::2'
+    nas:
+      hosts:
+        crater2:
+          nas_device_name: sda
+          nas_device_path: /dev/sda
   vars:
     admin_username: rhild
     admin_ssh_public_key: https://github.com/dhild.keys

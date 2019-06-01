@@ -1,0 +1,10 @@
+---
+- include_tasks: disk.yml
+  tags:
+    - disk
+
+- include_tasks: samba.yml
+  when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - debian
+    - samba

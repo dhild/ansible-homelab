@@ -1,0 +1,8 @@
+---
+- name: Install Samba
+  apt:
+    package:
+    - samba
+    - samba-common-bin
+    state: latest
+    update_cache: yes
