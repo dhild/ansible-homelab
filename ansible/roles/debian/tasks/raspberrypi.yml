@@ -1,9 +1,4 @@
 ---
-- name: Remove passwordless sudo for pi user
-  file:
-    path: /etc/sudoers.d/010_pi-nopasswd
-    state: absent
-
 - name: Change password for pi user
   user:
     name: pi
@@ -25,3 +20,9 @@
       # Disable BlueTooth
       blacklist btbcm
       blacklist hci_uart
+
+- name: Remove passwordless sudo for pi user
+  file:
+    path: /etc/sudoers.d/010_pi-nopasswd
+    state: absent
+  when: ansible_user != "pi"

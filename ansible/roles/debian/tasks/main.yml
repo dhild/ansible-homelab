@@ -3,3 +3,21 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags:
     - debian
+
+- include_tasks: admin_user.yml
+  when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - debian
+    - adminuser
+
+- include_tasks: firewall.yml
+  when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - debian
+    - firewall
+
+- include_tasks: raspberrypi.yml
+  when: ansible_facts['lsb']['id'] == 'Raspbian'
+  tags:
+    - debian
+    - raspberrypi

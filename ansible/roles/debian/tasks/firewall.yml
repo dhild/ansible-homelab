@@ -1,6 +1,5 @@
 ---
-
-- name: Install firewall
+- name: Install UFW
   apt:
     name: ufw
     state: latest

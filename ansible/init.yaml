@@ -1,0 +1,9 @@
+---
+- name: Initialize raspberry pis
+  hosts: raspberrypis
+  become: yes
+  roles:
+  - ssh_server
+  remote_user: pi
+  vars:
+    admin_password: "{{ vault_admin_password }}"

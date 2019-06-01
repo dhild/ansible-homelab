@@ -18,7 +18,8 @@
 - name: Ensure timezone set
   timezone:
     name: America/Los_Angeles
-  register: timezone
+  notify:
+    - reboot
   tags:
     - timezone
 
@@ -26,6 +27,8 @@
   hostname:
     name: "{{ inventory_hostname }}"
   register: hostname
+  notify:
+    - reboot
   tags:
     - hostname
 
@@ -36,26 +39,3 @@
     line: "{{ ansible_default_ipv4.address }} {{ ansible_fqdn }} {{ ansible_hostname }}"
   tags:
     - hostname
-
-- include_tasks: admin_user.yml
-  tags:
-    - adminuser
-
-- include_tasks: firewall.yml
-  tags:
-    - firewall
-
-- include_tasks: raspberrypi.yml
-  when: ansible_facts['lsb']['id'] == 'Raspbian'
-  tags:
-    - raspberrypi
-
-- name: Reboot if needed
-  reboot:
-    reboot_timeout: 3600
-  when: timezone.changed or hostname.changed
-  tags:
-    - hostname
-    - timezone
-    - update
-    - reboot
