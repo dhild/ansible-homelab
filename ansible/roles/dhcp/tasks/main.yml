@@ -1,0 +1,6 @@
+---
+- include_tasks: edgeos.yml
+  when: ansible_network_os == 'edgeos'
+  tags:
+    - edgeos
+    - dhcp

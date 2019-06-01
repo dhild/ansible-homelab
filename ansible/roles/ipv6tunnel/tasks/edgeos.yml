@@ -52,7 +52,6 @@
     lines:
     - set interfaces switch switch0 firewall in ipv6-name WAN_IPv6_IN
     - set interfaces switch switch0 firewall local ipv6-name WAN_IPv6_LOCAL
-    - set interfaces switch switch0 firewall out ipv6-name LOCAL_IPv6_WAN
     - set interfaces switch switch0 address '{{ ipv6_tunnel_routed_64 }}'
     - set interfaces switch switch0 ipv6 dup-addr-detect-transmits 1
     - set interfaces switch switch0 ipv6 router-advert cur-hop-limit 64

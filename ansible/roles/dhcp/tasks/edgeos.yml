@@ -1,0 +1,34 @@
+---
+- name: Configure DHCP Settings
+  edgeos_config:
+    lines:
+    - set service dhcp-server disabled false
+    - set service dhcp-server hostfile-update disable
+    - set service dhcp-server shared-network-name LAN authoritative enable
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} default-router {{ router_ipv4_address }}
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} lease 86400
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} start 192.168.2.38 stop 192.168.2.243
+    - set service dhcp-server static-arp disable
+    - set service dhcp-server use-dnsmasq enable
+
+- name: Configure DNS Servers
+  edgeos_config:
+    lines:
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} dns-server {{ item }}
+    with_items: {{ dns_ipv4_addresses }}
+
+- name: Configure DHCP Settings
+  edgeos_config:
+    lines:
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater0 ip-address 192.168.2.40
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater0 mac-address 'b8:27:eb:e8:eb:ea'
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater1 ip-address 192.168.2.41
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater1 mac-address 'b8:27:eb:70:5b:17'
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater2 ip-address 192.168.2.42
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater2 mac-address 'b8:27:eb:c9:b1:1d'
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater3 ip-address 192.168.2.43
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping crater3 mac-address 'b8:27:eb:c6:ea:f3'
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping jackfruit ip-address 192.168.2.39
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping jackfruit mac-address '10:c3:7b:94:91:c8'
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping pineapple ip-address 192.168.2.38
+    - set service dhcp-server shared-network-name LAN subnet {{ router_ipv4_network }} static-mapping pineapple mac-address 'ac:22:0b:dc:ec:83'

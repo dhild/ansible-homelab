@@ -67,12 +67,33 @@
   tags:
     - firewall
 
+- name: Allow DNS through the firewall
+  ufw:
+    rule: allow
+    proto: "{{ item }}"
+    to_port: 53
+    from_ip: "{{ ipv6_tunnel_routed_64 }}"
+  with_items:
+    - tcp
+    - udp
+  tags:
+    - firewall
+
 - name: Allow HTTP for admin portal through the firewall
   ufw:
     rule: allow
     proto: tcp
     to_port: 80
     from_ip: "{{ ansible_default_ipv4.network }}/24"
+  tags:
+    - firewall
+
+- name: Allow HTTP for admin portal through the firewall
+  ufw:
+    rule: allow
+    proto: tcp
+    to_port: 80
+    from_ip: "{{ ipv6_tunnel_routed_64 }}"
   tags:
     - firewall
 
